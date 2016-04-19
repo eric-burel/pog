@@ -24,19 +24,19 @@ type Eventer interface {
 	Generate() Event // Genereate an event
 }
 
-// NewEvent Constructor that sets up event date to Now
-func NewEvent(creator *interface{}, data Data) (event *Event) {
+// New Constructor that sets up event date to Now
+func New(creator *interface{}, data Data) (event *Event) {
 	event = &Event{count, time.Now(), creator, data}
 	count++
 	return
 }
 
-// TriggerNow Trigger an event now
-func (event *Event) TriggerNow() {
+// SetDateNow Trigger an event now
+func (event *Event) SetDateNow() {
 	event.Date = time.Now()
 }
 
-// Trigger Trigger an event at the specified date
-func (event *Event) Trigger(date time.Time) {
+// SetDate Trigger an event at the specified date
+func (event *Event) SetDate(date time.Time) {
 	event.Date = date
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/eric-burel/pog/event"
+	"github.com/eric-burel/pog/timetogo"
 	"github.com/eric-burel/rgo"
 )
 
@@ -30,8 +31,8 @@ func (c Chaining) Trigger(begin time.Time) {
 		// generate the event random attributes
 		event := elmt.Eventer.Generate()
 		// trigger the event
-		event.Trigger(t)
-		nextDuration := time.Duration(elmt.TimeToNext.R()) * time.Second // discrete random value is converted to a duration, in second
+		event.SetDate(t)
+		nextDuration := timetogo.Seconds(elmt.TimeToNext.R()) // discrete random value is converted to a duration, in second
 		// increase time between each event
 		t.Add(nextDuration)
 	}

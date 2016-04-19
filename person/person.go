@@ -11,8 +11,8 @@ type Person struct {
 	Habits []habit.Habit // habits of an user
 }
 
-// NewPerson Generate a new person
-func NewPerson(name string) (p *Person) {
+// New Generate a new person
+func New(name string) (p *Person) {
 	p = &Person{count, name, make([]habit.Habit, 0)}
 	count++
 	return
