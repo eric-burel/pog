@@ -16,5 +16,5 @@ type Habit struct {
 
 // Habiter An object able to generate a set of event
 type Habiter interface {
-	Trigger(begin time.Time) []event.Event // function that generate a set of events
+	Generate(begin time.Time, end time.Time) []event.Event // function that generate a set of events
 }
