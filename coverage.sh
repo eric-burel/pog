@@ -11,7 +11,9 @@ cover(){
 instrument event
 instrument person
 instrument habit
+instrument timetogo
 # generate report
 cover event
 cover person
 cover habit
+cover timetogo
