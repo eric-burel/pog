@@ -8,20 +8,25 @@ import (
 	"github.com/eric-burel/rgo"
 )
 
+// PeriodicDay A periodic habit is either defined as a weekly habit, or as a daily habit,
+// hence this type
+// NOTE : this behaviour might change, using only Day and using methods like generateDays(Weekday)
+type PeriodicDay struct {
+	isWeekly bool
+	Weekdays []time.Weekday
+	Days     []timetogo.Day
+}
+
 // Periodic An event that happens at a certain times
 // TODO : So far, it is not randomized, we should be able to use timetogo._er to generate Monthes, days and all
 type Periodic struct {
-	Months []timetogo.Month //
-	Days   struct {
-		isWeekly bool
-		Weekdays []timetogo.Weekday
-		Days     []timetogo.Day
-	}
+	Months    []timetogo.Month //
+	Days      PeriodicDay
 	Hours     []timetogo.Hour
 	Minutes   []timetogo.Minute
 	Seconds   []timetogo.Second
-	Happens   float64                        // Average probability that then event happens
-	Condition func(p Periodic, e Event) bool // Cancel the event
+	Happens   float64                              // Average probability that then event happens
+	Condition func(p Periodic, e event.Event) bool // Cancel the event
 	// useful to implement stuffs such ass "First tuesday of the month",
 	// if event.Date does not match this condition, we cancel its firing
 	Randomizer timetogo.Durationer // Add randomness
@@ -31,58 +36,51 @@ type Periodic struct {
 // Generate Generate a set of periodic events
 func (p Periodic) Generate(begin time.Time, end time.Time) (evts []event.Event) {
 	t := begin
-	y := t.Year()
+	evtTime := timetogo.NewZeroTime()
+	y := begin.Year()
 	// TODO I am a huge mess, refactor me
 	for t.Before(end) {
+		evtTime.Year = timetogo.Year(y)
 		for _, m := range p.Months {
-			// skip if current time is before begin
-			if y == begin.Year() && m < begin.Month() {
-				continue
-			}
-			var days []Day
+			evtTime.Month = m
+			var days []timetogo.Day
 			if p.Days.isWeekly {
 				// TODO : generate all the days in the Month
 				// for each weekday
 				// generate them for this month and year
-				days = make([]timetogo.Weekday, 0) // TODO generateDays(p.Days.Weekdays)
+				days = make([]timetogo.Day, 0) // TODO generateDays(p.Days.Weekdays)
 			} else {
 				days = p.Days.Days
 			}
 			for _, d := range days {
-				if y == begin.Year() && m == begin.Month() && d < begin.Day() {
-					continue
-				}
-				// TODO : skip if year y, month m, day d are  < to t
+				evtTime.Day = d
 				for _, h := range p.Hours {
-					if y == begin.Year() && m == begin.Month() && d < begin.Hour() {
-						continue
-					}
-					// TODO : skip if year y, month m, day d, hour h are  < to t
+					evtTime.Hour = h
 					for _, min := range p.Minutes {
-						if y == begin.Year() && m == begin.Month() && h == begin.Hour() && d < begin.Minute() {
-							continue
-						}
-						// TODO : skip if year y, month m, day d, hour h,minute min are  < to t
+						evtTime.Minute = min
 						for _, s := range p.Seconds {
-							if y == begin.Year() && m == begin.Month() && h == begin.Hour() && d == begin.Minute() && s < begin.Second() {
+							evtTime.Second = s
+							// skip if the generated time is before begin
+							if evtTime.Before(begin) {
 								continue
 							}
 							// Check if event should happen
 							var happen = rgo.NewBern(p.Happens).R()
 							if happen == 0 {
-								// TODO break for loop
+								continue
 							} else {
-								// TODO : skip if year y, month m, day d, hour h,minute min, second s are  < to t
-								var evtTime = time.Date(y, m, d, h, min, s, 0, time.UTC)
-								// TODO check if this time respects p.condition
+								// convert timetogo.Time to time.Time
+								var stdTime = evtTime.ToTime()
+								// add randomized duration to it
+								stdTime.Add(p.Randomizer.Duration())
 								// generate an event
 								var evt = p.Eventer.Generate()
 								// set its time to the given m d h min sec
-								evt.SetDate(evtTime)
+								evt.SetDate(stdTime)
 								// add it to the slice
-								append(evts, evt)
+								evts = append(evts, evt)
 								// increase time
-								t = evtTime
+								t = stdTime
 							}
 						}
 					}
