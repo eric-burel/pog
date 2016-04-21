@@ -8,6 +8,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestToTime(t *testing.T) {
+	t1 := Time{2016, 4, 21, 17, 30, 1}
+	t2 := t1.ToTime()
+	assert.Equal(t, 2016, t2.Year())
+	assert.Equal(t, time.Month(4), t2.Month())
+	assert.Equal(t, 21, t2.Day())
+	assert.Equal(t, 17, t2.Hour())
+	assert.Equal(t, 30, t2.Minute())
+	assert.Equal(t, 1, t2.Second())
+	assert.Equal(t, 0, t2.Nanosecond())
+}
+
 func TestTime(t *testing.T) {
 	assert.Equal(t, time.Duration(25*int(math.Pow10(8))), times(float64(2.5), time.Second))
 	assert.Equal(t, time.Duration(25*int(math.Pow10(8))), times(float32(2.5), time.Second))

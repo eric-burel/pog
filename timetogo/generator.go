@@ -7,6 +7,11 @@ type Durationer interface {
 	Duration() time.Duration
 }
 
+// Weekdayer Generate a week day, between Monday-Sunday
+type Weekdayer interface {
+	Weekday() time.Weekday
+}
+
 // Dayer Generate a day, between 0-31
 type Dayer interface {
 	Day() Day

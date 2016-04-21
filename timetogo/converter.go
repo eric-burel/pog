@@ -2,6 +2,15 @@ package timetogo
 
 import "time"
 
+// ToTime Convert a timetogo.Time (a struct) in a time.Time object
+func (t Time) ToTime() (tt time.Time) {
+	tt = time.Date(
+		int(t.Year), time.Month(t.Month), int(t.Day),
+		int(t.Hour), int(t.Minute), int(t.Second),
+		0, time.UTC)
+	return
+}
+
 func times(v interface{}, d time.Duration) (res time.Duration) {
 	// we check if v is a number and do the correct cast depending on results
 	// TODO : this should be far more complete, maybe using a loop on all possible numerical type
