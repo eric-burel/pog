@@ -72,7 +72,7 @@ func (p Periodic) Generate(begin time.Time, end time.Time) (evts []event.Event) 
 								// convert timetogo.Time to time.Time
 								var stdTime = evtTime.ToTime()
 								// add randomized duration to it
-								stdTime.Add(p.Randomizer.Duration())
+								stdTime = stdTime.Add(p.Randomizer.Duration())
 								// generate an event
 								var evt = p.Eventer.Generate()
 								// set its time to the given m d h min sec
@@ -86,6 +86,11 @@ func (p Periodic) Generate(begin time.Time, end time.Time) (evts []event.Event) 
 					}
 				}
 			}
+		}
+		// if time haven't been increase, it means that p contained no Date
+		// => we quit
+		if t == begin {
+			break
 		}
 		// when we iterated on every month, we increase year
 		y++

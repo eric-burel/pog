@@ -32,13 +32,13 @@ func TestGenerate(t *testing.T) {
 	// TODO So far, it simply checks that functions work well, but does
 	// validate results
 	l := lookAtFacebook{rgo.NewBinom(100, 0.2)}
-	// event that happens every hour, with a 5 minutes variance
-	rate := facebookRate{rgo.NewNorm(60, 5)}
+	// event that happens every half an hour, with a 5 minutes variance
+	rate := facebookRate{rgo.NewNorm(30, 5)}
 	p := Rythmic{Habit{}, rate, l}
 	begin := time.Now()
-	end := begin.Add(timetogo.Hours(24))
+	end := begin.Add(timetogo.Hours(5))
 	evts := p.Generate(begin, end)
 	for _, evt := range evts {
-		t.Log("Event : %v pages liked at time %v \n", evt.Data["liked pages"], evt.Date)
+		t.Logf("Event : %v pages liked at time %v \n", evt.Data["liked pages"], evt.Date)
 	}
 }

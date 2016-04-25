@@ -16,8 +16,8 @@ func (exam) Generate() (e event.Event) {
 	absents := 100 - students
 	duration := rgo.NewGeom(0.5).R() + 1
 	e.Data = event.Data{
-		"students": students,
-		"abstents": absents,
+		"presents": students,
+		"absents":  absents,
 		"duration": duration,
 	}
 	return
@@ -34,6 +34,28 @@ func (examTime) Duration() (d time.Duration) {
 	return
 }
 
+// Test when no time is specified
+func TestPeriodicGenerateNeverHappens(t *testing.T) {
+	m := []timetogo.Month{1, 5}
+	d := []timetogo.Day{3, 4, 5, 6, 7}
+	//h := []timetogo.Hour{8, 13}
+	min := []timetogo.Minute{0}
+	s := []timetogo.Second{0}
+	happens := 0.99
+	randomizer := new(examTime)
+	eventer := new(exam)
+
+	p := Periodic{m, PeriodicDay{false, nil, d}, nil, min, s, happens, nil, randomizer, eventer}
+
+	begin := time.Now()
+	end := begin.Add(timetogo.Days(365 * 2))
+	evts := p.Generate(begin, end)
+	for _, evt := range evts {
+		t.Logf("Event : exam started at %v and lasted %v hours, with %v students there, and %v absents.\n",
+			evt.Date, evt.Data["duration"], evt.Data["presents"], evt.Data["absents"])
+	}
+
+}
 func TestPeriodicGenerate(t *testing.T) {
 	m := []timetogo.Month{1, 5}
 	d := []timetogo.Day{3, 4, 5, 6, 7}
@@ -44,7 +66,7 @@ func TestPeriodicGenerate(t *testing.T) {
 	randomizer := new(examTime)
 	eventer := new(exam)
 
-	p := Periodic{m, PeriodicDay{true, nil, d}, h, min, s, happens, nil, randomizer, eventer}
+	p := Periodic{m, PeriodicDay{false, nil, d}, h, min, s, happens, nil, randomizer, eventer}
 
 	begin := time.Now()
 	end := begin.Add(timetogo.Days(365 * 2))
