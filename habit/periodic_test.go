@@ -47,7 +47,7 @@ func TestPeriodicGenerate(t *testing.T) {
 	p := Periodic{m, PeriodicDay{true, nil, d}, h, min, s, happens, nil, randomizer, eventer}
 
 	begin := time.Now()
-	end := begin.Add(timetogo.Month(24))
+	end := begin.Add(timetogo.Days(365 * 2))
 	evts := p.Generate(begin, end)
 	for _, evt := range evts {
 		t.Logf("Event : exam started at %v and lasted %v hours, with %v students there, and %v absents.\n",
