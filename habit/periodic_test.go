@@ -9,25 +9,6 @@ import (
 	"github.com/eric-burel/rgo"
 )
 
-// user behaviour when on facebook
-type lookAtFacebook struct {
-	PagesLiked rgo.Discreter // Number of pages liked
-}
-
-func (l lookAtFacebook) Generate() (e event.Event) {
-	e = *event.New(nil, event.Data{"liked pages": l.PagesLiked.R()})
-	return
-}
-
-// time between two connexion on facebook
-type facebookRate struct {
-	Randomizer rgo.Continuouser
-}
-
-func (r facebookRate) Duration() time.Duration {
-	return timetogo.Minutes(r.Randomizer.R())
-}
-
 type exam struct{}
 
 func (exam) Generate() (e event.Event) {
@@ -53,7 +34,7 @@ func (examTime) Duration() (d time.Duration) {
 	return
 }
 
-func TestGenerate(t *testing.T) {
+func TestPeriodicGenerate(t *testing.T) {
 	m := []timetogo.Month{1, 5}
 	d := []timetogo.Day{3, 4, 5, 6, 7}
 	h := []timetogo.Hour{8, 13}
@@ -66,7 +47,7 @@ func TestGenerate(t *testing.T) {
 	p := Periodic{m, PeriodicDay{true, nil, d}, h, min, s, happens, nil, randomizer, eventer}
 
 	begin := time.Now()
-	end := begin.Add(timetogo.Hours(24))
+	end := begin.Add(timetogo.Month(24))
 	evts := p.Generate(begin, end)
 	for _, evt := range evts {
 		t.Logf("Event : exam started at %v and lasted %v hours, with %v students there, and %v absents.\n",

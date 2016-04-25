@@ -7,7 +7,7 @@ import (
 	"github.com/eric-burel/pog/timetogo"
 )
 
-// Periodic An habit that consist in triggering the same event at a given rate :
+// Rythmic An habit that consist in triggering the same event at a given rate :
 // connecting every day, cleaning mail every month and so one
 type Rythmic struct {
 	Habit
