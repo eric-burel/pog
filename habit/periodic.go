@@ -5,14 +5,14 @@ import (
 
 	"github.com/eric-burel/pog/event"
 	"github.com/eric-burel/pog/timetogo"
-	"github.com/eric-burel/rgo"
+	"github.com/eric-burel/rgo/rand"
 )
 
 // PeriodicDay A periodic habit is either defined as a weekly habit, or as a daily habit,
 // hence this type
 // NOTE : this behaviour might change, using only Day and using methods like generateDays(Weekday)
 type PeriodicDay struct {
-	isWeekly bool
+	IsWeekly bool
 	Weekdays []time.Weekday
 	Days     []timetogo.Day
 }
@@ -34,17 +34,20 @@ type Periodic struct {
 }
 
 // Generate Generate a set of periodic events
-func (p Periodic) Generate(begin time.Time, end time.Time) (evts []event.Event) {
+func (p Periodic) Generate(begin time.Time, end time.Time) (evts event.Events) {
+	if !begin.Before(end) {
+		panic("error : specified begin time was after end time")
+	}
 	t := begin
 	evtTime := timetogo.NewZeroTime()
 	y := begin.Year()
 	// TODO I am a huge mess, refactor me
-	for t.Before(end) {
+	for y <= end.Year() {
 		evtTime.Year = timetogo.Year(y)
 		for _, m := range p.Months {
 			evtTime.Month = m
 			var days []timetogo.Day
-			if p.Days.isWeekly {
+			if p.Days.IsWeekly {
 				// TODO : generate all the days in the Month
 				// for each weekday
 				// generate them for this month and year
@@ -63,9 +66,12 @@ func (p Periodic) Generate(begin time.Time, end time.Time) (evts []event.Event) 
 							// skip if the generated time is before begin
 							if evtTime.Before(begin) {
 								continue
+							} else if end.Before(evtTime.ToTime()) {
+								// we break if event time is after the loop
+								break
 							}
 							// Check if event should happen
-							var happen = rgo.NewBern(p.Happens).R()
+							var happen = rand.NewBern(p.Happens).R()
 							if happen == 0 {
 								continue
 							} else {

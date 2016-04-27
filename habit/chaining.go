@@ -5,7 +5,7 @@ import (
 
 	"github.com/eric-burel/pog/event"
 	"github.com/eric-burel/pog/timetogo"
-	"github.com/eric-burel/rgo"
+	"github.com/eric-burel/rgo/rand"
 )
 
 // Chaining An habit that consists in chaining a list of event, with a certain
@@ -14,12 +14,12 @@ type Chaining []chainingElement
 
 // chainingElement Element of a chaining, ie an event
 type chainingElement struct {
-	Eventer    event.Eventer // The event generator
-	TimeToNext rgo.Discreter // Time between this event and the next one
+	Eventer    event.Eventer  // The event generator
+	TimeToNext rand.Discreter // Time between this event and the next one
 }
 
 // AppendNew Create a new chaining element and adds it to the chaining
-func (c Chaining) AppendNew(e event.Eventer, t rgo.Discreter) {
+func (c Chaining) AppendNew(e event.Eventer, t rand.Discreter) {
 	elmt := chainingElement{e, t}
 	c = append(c, elmt)
 }

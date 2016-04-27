@@ -6,22 +6,22 @@ import (
 
 	"github.com/eric-burel/pog/event"
 	"github.com/eric-burel/pog/timetogo"
-	"github.com/eric-burel/rgo"
+	"github.com/eric-burel/rgo/rand"
 )
 
 // user behaviour when on facebook
 type lookAtFacebook struct {
-	PagesLiked rgo.Discreter // Number of pages liked
+	PagesLiked rand.Discreter // Number of pages liked
 }
 
 func (l lookAtFacebook) Generate() (e event.Event) {
-	e = *event.New(nil, event.Data{"liked pages": l.PagesLiked.R()})
+	e = *event.New(nil, "visited facebook", event.Data{"liked pages": l.PagesLiked.R()})
 	return
 }
 
 // time between two connexion on facebook
 type facebookRate struct {
-	Randomizer rgo.Continuouser
+	Randomizer rand.Continuouser
 }
 
 func (r facebookRate) Duration() time.Duration {
@@ -31,9 +31,9 @@ func (r facebookRate) Duration() time.Duration {
 func TestGenerate(t *testing.T) {
 	// TODO So far, it simply checks that functions work well, but does
 	// validate results
-	l := lookAtFacebook{rgo.NewBinom(100, 0.2)}
+	l := lookAtFacebook{rand.NewBinom(100, 0.2)}
 	// event that happens every half an hour, with a 5 minutes variance
-	rate := facebookRate{rgo.NewNorm(30, 5)}
+	rate := facebookRate{rand.NewNorm(30, 5)}
 	p := Rythmic{Habit{}, rate, l}
 	begin := time.Now()
 	end := begin.Add(timetogo.Hours(5))

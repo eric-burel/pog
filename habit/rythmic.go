@@ -16,7 +16,7 @@ type Rythmic struct {
 }
 
 // Generate Generate a set of periodic events
-func (p Rythmic) Generate(begin time.Time, end time.Time) (evts []event.Event) {
+func (p Rythmic) Generate(begin time.Time, end time.Time) (evts event.Events) {
 	t := begin
 	for t.Before(end) {
 		evt := p.Eventer.Generate()
