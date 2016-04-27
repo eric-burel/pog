@@ -86,8 +86,8 @@ func TestPeriodicLength(t *testing.T) {
 	eventer := new(exam)
 
 	p := Periodic{m, PeriodicDay{false, nil, d}, h, min, s, happens, nil, randomizer, eventer}
-	begin := time.Date(2016, 1, 3, 6, 30, 0, 0, time.UTC)
-	end := time.Date(2016, 1, 3, 22, 30, 0, 0, time.UTC)
+	begin := time.Date(2016, 1, 3, 5, 30, 0, 0, time.UTC)
+	end := time.Date(2016, 1, 3, 23, 30, 0, 0, time.UTC)
 	evts := p.Generate(begin, end)
 	assert.Equal(t, 2, evts.Len())
 
